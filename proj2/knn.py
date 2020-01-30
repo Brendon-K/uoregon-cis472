@@ -71,19 +71,18 @@ def normalize_data(train_x, test_x, rangenorm, varnorm, exnorm):
   train = np.copy(train_x)
   test = np.copy(test_x)
 
-  with np.printoptions(threshold=np.inf):
-    print("train")
-    print(train)
-    print("test")
-    print(test)
-  print()
-  
   if rangenorm:
     print("rangenorm")  
   if varnorm:
     print("varnorm")  
   if exnorm:
     print("exnorm")
+  with np.printoptions(threshold=np.inf):
+    print("train")
+    print(train)
+    print("test")
+    print(test)
+  print('-'*10)
 
   if rangenorm:
     '''
@@ -111,11 +110,13 @@ def normalize_data(train_x, test_x, rangenorm, varnorm, exnorm):
     Feature variance normalization should rescale instances 
     so they have a standard deviation of 1 in the training data.
     '''
-    #find mean
+    # find mean
     train_xbar = np.mean(train_x, axis=0)
     # find std
     train_std = np.std(train_x, axis=0)
     
+    # normalize
+    # (x - xbar) / std
     for i in range(len(train)):
       for j in range(len(train[i])):
         train[i][j] = (train[i][j] - train_xbar[j]) / train_std[j]
@@ -130,36 +131,38 @@ def normalize_data(train_x, test_x, rangenorm, varnorm, exnorm):
     each example to have a magnitude of 1 (under a Euclidean norm).
     '''
     # TODO: YOUR CODE HERE
-    train_sum = np.sum(train_x, axis=0)
-    print(train_sum.shape)
-    print(train_x.shape)
+    # find euclidean norm
+    norm_x = np.linalg.norm(train_x.astype(float), axis=0)
 
-    for i, item in enumerate(train_x):
-      if train_sum[i] == 0:
-        train[i] = item / train_sum[i]
-      else:  
-        train[i] = 0 
+    # normalize
+    # x / ||x|| 
+    for i in range(len(train)):
+      for j in range(len(train[i])):
+        if norm_x[j] == 0:
+          train[i][j] = 0
+        else:
+          train[i][j] = float(train[i][j]) / norm_x[j]
 
-    for i, item in enumerate(test_x):
-      if train_sum[i] == 0:
-        test[i] = item / train_sum[i]
-      else:
-        test[i] = 0
+    for i in range(len(test)):
+      for j in range(len(test[i])):
+        if norm_x[j] == 0:
+          test[i][j] = 0
+        else:
+          test[i][j] = test[i][j] / norm_x[j]
 
-  np.nan_to_num(train)
-  np.nan_to_num(test)
 
-  train[np.isnan(train)] = 0
-  test[np.isnan(test)] = 0
+  train = np.nan_to_num(train)
+  test = np.nan_to_num(test)
 
   with np.printoptions(threshold=np.inf):
     print("train")
     print(train)
     print("test")
     print(test)
+    print('-'*20)
+    print()
 
   return train, test
-
 
 # Run classifier and compute accuracy
 def runTest(test_x, test_y, train_x, train_y, k):
@@ -171,7 +174,6 @@ def runTest(test_x, test_y, train_x, train_y, k):
       correct += 1
   acc = float(correct)/len(test_x)
   return acc
-
 
 # Load train and test data.  Learn model.  Report accuracy.
 # (NOTE: You shouldn't need to change this.)
