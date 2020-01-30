@@ -40,6 +40,7 @@ def dist(x1, x2):
   
 # Predict label for instance x, using k nearest neighbors in training data
 def classify(train_x, train_y, k, x):
+  # TODO: YOUR CODE HERE
   # keep a list of all the distances with the values
   distances = []
   for i, data in enumerate(train_x):
@@ -64,36 +65,46 @@ def classify(train_x, train_y, k, x):
 
   return best[0]
 
-
 # Process the data to normalize features and/or examples.
 # NOTE: You need to normalize both train and test data the same way.
 def normalize_data(train_x, test_x, rangenorm, varnorm, exnorm):
   train = np.copy(train_x)
   test = np.copy(test_x)
+
+  with np.printoptions(threshold=np.inf):
+    print("train")
+    print(train)
+    print("test")
+    print(test)
+  print()
+  
+  if rangenorm:
+    print("rangenorm")  
+  if varnorm:
+    print("varnorm")  
+  if exnorm:
+    print("exnorm")
+
   if rangenorm:
     '''
     Feature range normalization should rescale instances 
     to range from -1 (mini- mum) to +1 (maximum), 
     according to values in the training data
     '''
-    # rescale instances to range from -1 to +1
+
     # find min and max
-    train_min = np.nanmin(train_x, axis=0)
-    diff_m = 2.0 / (np.ptp(train_x, axis=0))
-    b = -1.0 * diff_m * train_min - 1.0
+    train_min = np.min(train_x, axis=0)
+    train_max = np.max(train_x, axis=0)
 
     # normalize training values
-    # [(x - min) / (max - min)]* 2 - 1
-    for x in train_x:
-      for i, item in enumerate(x):
-          train[i] = diff_m[i] * item
-          train[i] += b[i]
+    # [(x - min) / (max - min)] * 2 - 1
+    for i in range(len(train)):
+      for j in range(len(train[i])):
+        train[i][j] = ((train[i][j] - train_min[j]) / (train_max[j] - train_min[j])) * 2 - 1
 
-    # normalize testing values
-    for x in test_x:
-      for i, item in enumerate(x):
-          test[i] = diff_m[i] * item
-          test[i] += b[i]
+    for i in range(len(test)):
+      for j in range(len(test[i])):
+        test[i][j] = ((test[i][j] - train_min[j]) / (train_max[j] - train_min[j])) * 2 - 1
 
   if varnorm:
     '''
@@ -104,12 +115,14 @@ def normalize_data(train_x, test_x, rangenorm, varnorm, exnorm):
     train_xbar = np.mean(train_x, axis=0)
     # find std
     train_std = np.std(train_x, axis=0)
+    
+    for i in range(len(train)):
+      for j in range(len(train[i])):
+        train[i][j] = (train[i][j] - train_xbar[j]) / train_std[j]
 
-    for i, item in enumerate(train_x):
-      train[i] = (item - train_xbar) / train_std
-
-    for i, item in enumerate(test_x):
-      test[i] = (item - train_xbar) / train_std
+    for i in range(len(test)):
+      for j in range(len(test[i])):
+        test[i][j] = (test[i][j] - train_xbar[j]) / train_std[j]
 
   if exnorm:
     '''
@@ -117,16 +130,33 @@ def normalize_data(train_x, test_x, rangenorm, varnorm, exnorm):
     each example to have a magnitude of 1 (under a Euclidean norm).
     '''
     # TODO: YOUR CODE HERE
-    train_sum = sum(train_x)
+    train_sum = np.sum(train_x, axis=0)
+    print(train_sum.shape)
+    print(train_x.shape)
 
     for i, item in enumerate(train_x):
-      train[i] = item / train_sum
+      if train_sum[i] == 0:
+        train[i] = item / train_sum[i]
+      else:  
+        train[i] = 0 
 
     for i, item in enumerate(test_x):
-      test[i] = item / train_sum
+      if train_sum[i] == 0:
+        test[i] = item / train_sum[i]
+      else:
+        test[i] = 0
+
+  np.nan_to_num(train)
+  np.nan_to_num(test)
 
   train[np.isnan(train)] = 0
   test[np.isnan(test)] = 0
+
+  with np.printoptions(threshold=np.inf):
+    print("train")
+    print(train)
+    print("test")
+    print(test)
 
   return train, test
 
