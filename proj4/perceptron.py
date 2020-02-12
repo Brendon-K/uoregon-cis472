@@ -50,25 +50,38 @@ def train_perceptron(train_x, train_y, maxiter=100):
   w = np.array([0.0] * numvars)
   b = 0.0
 
-  for i in range(maxiter):
+  for iters in range(maxiter):
     #
     # YOUR CODE HERE!
     #
-    pass
+    for i, x in enumerate(train_x):
+      a = 0
+      for j, value in enumerate(x):
+        a += value * w[j]
+      a += b
+      if (a * train_y[i] <= 0):
+        for j, weight in enumerate(w):
+          weight += train_y[i] * x[j]
+          w[j] = weight
+        b += train_y[i]
 
   return (w,b)
 
 
 # Compute the activation for input x.
 # (NOTE: This should be a real-valued number, not simply +1/-1.)
-def predict_perceptron(model, x):
+def predict_perceptron(model, xs):
   (w,b) = model
 
   #
   # YOUR CODE HERE!
   #
+  a = 0
+  for i, x in enumerate(xs):
+    a += w[i] * x
+  a += b
 
-  return 0.0
+  return a
 
 
 # Load train and test data.  Learn model.  Report accuracy.
