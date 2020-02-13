@@ -54,23 +54,25 @@ def train_lr(train_x, train_y, eta, l2_reg_weight, maxiter=100):
   w = np.array([0.0] * numvars)
   b = 0.0
 
-  #
-  # YOUR CODE HERE
-  #
   for i in range(maxiter):
-      pass
-  
+    predictions = predict_lr((w, b) train_x)
+    w = w - (1 / numvars) * eta * (train_x.T.dot((predictions - train_Y)))
+    b =  
   return (w,b)
 
 
 # Predict the probability of the positive label (y=+1) given the
 # attributes, x.
+def sigmoid(x):
+  return 1.0 / (1.0 + np.exp(-x))
+
 def predict_lr(model, x):
   (w,b) = model
-  #
-  # YOUR CODE HERE
-  #
-  return 0.0
+  x2 = np.expand_dims(x, axis=1)
+  #np.dot is same as np.multiply and np.sum since dim=1
+  xW = np.dot(x2, w)
+  yhat = np.add(xW, b)
+  return sigmoid(yhat)
 
 # Load train and test data.  Learn model.  Report accuracy.
 # (NOTE: You shouldn't need to change this.)
