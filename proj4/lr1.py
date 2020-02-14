@@ -65,10 +65,11 @@ def train_lr(train_x, train_y, eta, l2_reg_weight, maxiter=100):
   w = np.array([0.0] * numvars)
   b = 0.0
   for i in range(maxiter):
-    pred = predict_lr((w, b), train_x)
-    print(pred)
-    w -= eta * train_x.T.dot((sigmoid(train_x @ w) + b) - train_y)
-    b -= eta * (pred - train_y)
+    loss = (sigmoid(train_x @ w) + b) - train_y
+    w -= eta * train_x.T.dot(loss)
+    b -= eta * (loss)
+  for i in range(10):
+      print(predict_lr((w,b), train_x[i]))
   return (w,b)
 
 
