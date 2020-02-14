@@ -55,9 +55,10 @@ def train_lr(train_x, train_y, eta, l2_reg_weight, maxiter=100):
   b = 0.0
 
   for i in range(maxiter):
-    predictions = predict_lr((w, b) train_x)
-    w = w - (1 / numvars) * eta * (train_x.T.dot((predictions - train_Y)))
-    b =  
+    predictions = predict_lr((w, b), train_x)
+    #p = np.expand_dims(predictions, axis=1)
+    w = w - (1 / numvars) * eta * (train_x.T.dot(predictions - train_y))
+    b = b - (1 / numvars) * eta * train_y
   return (w,b)
 
 
@@ -68,11 +69,10 @@ def sigmoid(x):
 
 def predict_lr(model, x):
   (w,b) = model
-  x2 = np.expand_dims(x, axis=1)
-  #np.dot is same as np.multiply and np.sum since dim=1
-  xW = np.dot(x2, w)
+  xW = np.dot(x, w)
   yhat = np.add(xW, b)
-  return sigmoid(yhat)
+  print(yhat)
+  return sigmoid(np.sum(yhat))
 
 # Load train and test data.  Learn model.  Report accuracy.
 # (NOTE: You shouldn't need to change this.)
