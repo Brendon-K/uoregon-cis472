@@ -54,14 +54,19 @@ def train_lr(train_x, train_y, eta, l2_reg_weight, maxiter=100):
   w = np.array([0.0] * numvars)
   b = 0.0
 
-  m = train_x.shape[0]
-
   for i in range(maxiter):
-    gradient = (1/m) * sigmoid(train_y*(train_x @ w + b)) * train_y
-    w_gradient = gradient @ train_x
+    grads = np.array([0.0] * numvars)
+    b_grad = 0
 
-    w -= eta * w_gradient + l2_reg_weight * w
-    b -= eta * gradient
+    for (x, y) in zip(train_x, train_y):
+      a = y * (x @ w + b)
+      if (a <= 1):
+        grads += y * x
+        b_grad += y
+
+    grads -= l2_reg_weight * w
+    w += eta * grads
+    b += eta * b_grad
 
   return (w,b)
 
