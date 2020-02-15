@@ -54,16 +54,16 @@ def train_lr(train_x, train_y, eta, l2_reg_weight, maxiter=100):
   w = np.array([0.0] * numvars)
   b = 0.0
 
-  for i in range(maxiter):
-    for (x, y) in zip(train_x, train_y):
-      predictions = predict_lr((w, b), x)
-      print(predictions)
-      #p = np.expand_dims(predictions, axis=1)
-      gradient = sigmoid(y*(np.dot(x, w)+b)) * predictions
-      w = w - (numvars**(-1) * eta * gradient * x + l2_reg_weight*w)
-      b = b - (y * np.exp(-1*y * (np.dot(w, x)+b)) + l2_reg_weight*w)
-  return (w,b)
+  m = train_x.shape[0]
 
+  for i in range(maxiter):
+    gradient = (1/m) * sigmoid(train_y*(train_x @ w + b)) * train_y
+    w_gradient = gradient @ train_x
+
+    w -= eta * w_gradient + l2_reg_weight * w
+    b -= eta * gradient
+
+  return (w,b)
 
 # Predict the probability of the positive label (y=+1) given the
 # attributes, x.
@@ -74,7 +74,6 @@ def predict_lr(model, x):
   (w,b) = model
   xW = np.dot(x, w)
   yhat = np.add(xW, b)
-  #print(yhat)
   return sigmoid(np.sum(yhat))
 
 # Load train and test data.  Learn model.  Report accuracy.
