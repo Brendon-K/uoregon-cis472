@@ -43,7 +43,7 @@ for folder in folders:
 	for img in coll:
 		# save image and add its id and label to a list
 		matplotlib.image.imsave("indexed_images/" + str(indices[i]) + ".jpg", img, cmap='gray')
-		rows.append((indices[i], folder))
+		rows.append((indices[i], folder.lower()))
 		i += 1
 		print('progress: {:.2f}%'.format(100 * i/num_images))
 
