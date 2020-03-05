@@ -3,11 +3,12 @@ from skimage.util import pad
 import matplotlib
 
 # grab all the images
-coll = io.ImageCollection("/Users/bkieser/Documents/School/CIS472/uoregon-cis472/final/test/*.jpg")
+path = './indexed_images/'
+coll = io.ImageCollection(path + "*.jpg")
 max_x, max_y = 1800, 1800
 
 for i, pic in enumerate(coll):
-	x, y = pic.shape
+	x, y, colors = pic.shape
 
 	# total amount to pad
 	t_pad_x = (max_x - x)
@@ -27,8 +28,8 @@ for i, pic in enumerate(coll):
 	if (t_pad_y % 2):
 		pad_y = (val_y, val_y+1)
 
-	padded = pad(pic, (pad_x, pad_y), mode='constant')
+	padded = pad(pic, (pad_x, pad_y, (0, 0)), mode='constant')
 
 	# save the image
 	fname = str(i) + ".jpg"
-	matplotlib.image.imsave(fname, padded)
+	matplotlib.image.imsave(path + fname, padded, cmap='gray')
