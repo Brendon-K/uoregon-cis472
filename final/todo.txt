@@ -1,5 +1,2 @@
 1. Figure out which plants we want to use as our data
 2. Decide proportion of training/testing
-3. Do zero padding on the data so it is all the same size
-	('max x', 1089)
-	('max y', 1706)
