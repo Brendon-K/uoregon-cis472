@@ -12,9 +12,15 @@ import random
 
 in_path = './test/data'
 
+
 # exit if in_path doesn't exist
 if (not os.path.isdir(in_path)):
 	print("path:", in_path, "does not exist.")
+	exit()
+
+print("Are you sure you want to run this script? (y/n)")
+inp = input()
+if (inp.lower() != 'y'):
 	exit()
 
 # counts the number of images
