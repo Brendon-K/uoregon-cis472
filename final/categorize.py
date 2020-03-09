@@ -1,6 +1,5 @@
-import skimage.io as io
-import matplotlib
 import os
+import cv2
 import random
 
 '''
@@ -9,53 +8,48 @@ import random
 	with that information. 
 '''
 
+path = os.path.join(os.getcwd(), 'datasets')
+source = os.path.join(path, 'test')
+dest = os.path.join(path, 'test_indexed')
 
-in_path = './test/data'
-
-
-# exit if in_path doesn't exist
-if (not os.path.isdir(in_path)):
-	print("path:", in_path, "does not exist.")
-	exit()
-
-print("Are you sure you want to run this script? (y/n)")
-inp = input()
-if (inp.lower() != 'y'):
-	exit()
-
-# counts the number of images
-walk = os.walk(in_path)
-num_images = 0
-for w in walk:
-	for l in w:
-		for item in l:
-			if (item[-4:] == '.jpg' or item[-4:] == '.png'):
-				num_images += 1
-
-# create directory for images to go in
+# make the destination folders
 try:
-	os.mkdir("indexed_images")
+	os.mkdir(dest)
 except FileExistsError:
 	pass
 
-# grab all the images
-folders = os.listdir(in_path)
+folders = os.listdir(source)
+images = {}
+num_images = 0
+
+for folder in folders:
+	if (folder[0] == '.'):
+		continue
+	images[folder] = []
+	files = os.listdir(os.path.join(source, folder))
+	for file in files:
+		if (file[-4:] == '.jpg' or file[-4:] == '.png'):
+			images[folder].append(file)
+			num_images += 1
+
 indices = [i for i in range(num_images)]
 random.shuffle(indices)
-rows = []
-i = 0
-for folder in folders:
-	coll = io.ImageCollection(in_path + '/' + folder + "/*.jpg")
-	for img in coll:
-		# save image and add its id and label to a list
-		matplotlib.image.imsave("indexed_images/" + str(indices[i]) + ".jpg", img, cmap='gray')
-		rows.append((indices[i], folder.lower()))
-		i += 1
-		print('progress: {:.2f}%'.format(100 * i/num_images))
+progress = 0
+labels = []
 
-# sort the list of ids and make a csv with the list
-sorted_rows = sorted(rows, key=lambda tup: tup[0])
-with open('labels.csv', 'w') as f:
-	f.write('{},{}\n'.format('id', 'label'))
-	for i, label in sorted_rows:
-		f.write('{},{}\n'.format(i, label))
+for k, v in images.items():
+	for file in v:
+		filename = os.path.join(source, k, file)
+		img = cv2.imread(filename)
+		
+		filename = os.path.join(dest, str(indices[progress])+'.jpg')
+		cv2.imwrite(filename, img)
+		labels.append((indices[progress], k))
+		progress += 1
+		print('progress: {:.2f}%'.format(100 * progress/num_images))
+			
+labels.sort(key=lambda tup: tup[0])
+with open(os.path.join(path, 'test.csv'), 'w') as f:
+	f.write('id,label\n')
+	for label in labels:
+		f.write(str(label[0]) + ',' + str(label[1]) + '\n')
