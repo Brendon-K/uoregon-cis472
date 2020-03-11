@@ -238,9 +238,10 @@ def index_images_helper(path, train_or_test):
 		for label in labels:
 			f.write(str(label[0]) + ',' + str(label[1]) + '\n')
 
-path = os.path.join(os.getcwd(), 'testing')
-pad_images(path)
-resize_images(path)
-transform_images(path)
-split_images(path, transformed=True)
-index_images(path)
+# EXAMPLE
+#path = os.path.join(os.getcwd(), 'testing')
+#pad_images(path)
+#resize_images(path)
+#transform_images(path)
+#split_images(path, transformed=True)
+#index_images(path)
