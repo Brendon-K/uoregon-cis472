@@ -230,7 +230,10 @@ def index_images_helper(path, train_or_test):
 			cv2.imwrite(filename, img)
 			labels.append((indices[progress], k))
 			progress += 1
-			print('indexing progress: {:.2f}%'.format(100 * progress/num_images))
+			if (train_or_test == 'train'):
+				print('indexing progress: {:.2f}%'.format(50 * progress/num_images))
+			if (train_or_test == 'test'):
+				print('indexing progress: {:.2f}%'.format(50 + (50 * progress/num_images)))
 				
 	labels.sort(key=lambda tup: tup[0])
 	with open(os.path.join(path, train_or_test + '.csv'), 'w') as f:
